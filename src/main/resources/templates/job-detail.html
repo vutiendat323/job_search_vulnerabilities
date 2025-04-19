@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
+<div class="card shadow-lg p-4">
+    <h2 class="text-2xl font-bold mb-3" th:text="${job.title}"></h2>
+    <p class="text-muted mb-2"><strong>Company:</strong> <span th:text="${job.company}"></span></p>
+    <p class="mb-4" th:text="${job.description}"></p>
+    <th:block th:if="${session.user}">
+        <h3 class="text-xl font-bold mb-3">Apply for this Job</h3>
+        <form th:action="@{/jobs/{id}/apply(id=${job.id})}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="resume" class="form-label">Upload Resume</label>
+                <input type="file" class="form-control" id="resume" name="resume" required>
+                <div class="invalid-feedback">Please upload a resume.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </form>
+    </th:block>
+    <th:block th:unless="${session.user}">
+        <p class="text-danger">Please <a href="/login">login</a> to apply for this job.</p>
+    </th:block>
+</div>
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+</html>

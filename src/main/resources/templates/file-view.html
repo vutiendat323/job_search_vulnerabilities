@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
+<div class="card shadow-lg p-4">
+    <h2 class="text-2xl font-bold mb-4">File View</h2>
+    <p>File: <a th:href="${filePath}" th:text="${filePath}"></a></p>
+    <a href="/admin/applications" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+</html>

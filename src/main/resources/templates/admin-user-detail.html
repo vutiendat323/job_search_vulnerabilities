@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
+<div class="card shadow-lg p-4">
+    <h2 class="text-2xl font-bold mb-4">User Details</h2>
+    <p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
+    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+    <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
+    <p><strong>Password:</strong> <span th:text="${user.password}"></span></p>
+    <a href="/admin/users" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+</html>

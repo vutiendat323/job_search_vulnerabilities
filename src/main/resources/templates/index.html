@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
+<div>
+    <section class="hero-section text-white py-10 text-center">
+        <div class="container">
+            <h1 class="text-3xl font-bold mb-4">Welcome to JobSearch</h1>
+            <p class="text-lg mb-6">Find your next job opportunity.</p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <input type="text" id="search" class="form-control" placeholder="Search for jobs...">
+                    <div id="searchResult" class="mt-2 text-left text-dark bg-light p-2 rounded"></div>
+                </div>
+            </div>
+            <script>
+                $("#search").on("input", function() {
+                    $("#searchResult").html($(this).val());
+                });
+            </script>
+        </div>
+    </section>
+    <section class="py-8">
+        <div class="container">
+            <h2 class="text-2xl font-bold mb-4">Featured Jobs</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4" th:each="job : ${jobs}">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title text-lg font-semibold" th:text="${job.title}"></h3>
+                            <p class="card-text text-muted" th:text="${job.company}"></p>
+                            <p class="card-text" th:text="${job.description.substring(0, 80) + '...'}"></p>
+                            <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="/jobs" class="btn btn-outline-primary">View All Jobs</a>
+            </div>
+        </div>
+    </section>
+</div>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
+<div>
+    <h2 class="text-2xl font-bold mb-4">Applications</h2>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>User ID</th>
+            <th>Job ID</th>
+            <th>Resume</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="app : ${applications}">
+            <td th:text="${app.id}"></td>
+            <td th:text="${app.userId}"></td>
+            <td th:text="${app.jobId}"></td>
+            <td>
+                <a th:href="@{/uploads/{fileName}(fileName=${app.resumePath})}" class="btn btn-primary btn-sm"><i class="fas fa-file"></i> View</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
+<div>
+    <h2 class="text-2xl font-bold mb-4">Job Listings</h2>
+    <div class="mb-4">
+        <input type="text" id="search" class="form-control" placeholder="Search jobs...">
+        <div id="searchResult" class="mt-2 text-dark bg-light p-2 rounded"></div>
+    </div>
+    <script>
+        $("#search").on("input", function() {
+            $("#searchResult").html($(this).val());
+        });
+    </script>
+    <div class="row">
+        <div class="col-md-4 mb-4" th:each="job : ${jobs}">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-lg font-semibold" th:text="${job.title}"></h3>
+                    <p class="card-text text-muted" th:text="${job.company}"></p>
+                    <p class="card-text" th:text="${job.description.substring(0, 80) + '...'}"></p>
+                    <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <th:block th:if="${session.user?.role == 'ADMIN'}">
+        <h3 class="text-xl font-bold mt-5">Create New Job</h3>
+        <form method="post" action="/jobs/create" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+                <div class="invalid-feedback">Please enter a title.</div>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" required></textarea>
+                <div class="invalid-feedback">Please enter a description.</div>
+            </div>
+            <div class="mb-3">
+                <label for="company" class="form-label">Company</label>
+                <input type="text" class="form-control" id="company" name="company" required>
+                <div class="invalid-feedback">Please enter a company name.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </th:block>
+</div>
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+</html>
