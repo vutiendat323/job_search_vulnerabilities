@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Uploads directory (user-uploaded files)
+src/main/resources/uploads/*
+!src/main/resources/uploads/.gitkeep
+
+# Docker data
+mysql_data/
+

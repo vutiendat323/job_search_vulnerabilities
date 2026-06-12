@@ -20,7 +20,7 @@ public class ApplicationController {
     private ApplicationService applicationService;
     private final String uploadDir = "src/main/resources/uploads/";
     @PostMapping("/jobs/{jobId}/apply")
-    public String apply(@RequestParam("resume") MultipartFile file, @RequestParam Long jobId, HttpSession session) {
+    public String apply(@RequestParam("resume") MultipartFile file, @RequestParam("jobId") Long jobId, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
@@ -45,7 +45,7 @@ public class ApplicationController {
         return "admin-applications";
     }
     @GetMapping("/uploads/{fileName}")
-    public String serveFile(@RequestParam String fileName, Model model) {
+    public String serveFile(@RequestParam("fileName") String fileName, Model model) {
         model.addAttribute("filePath", "/uploads/" + fileName);
         return "file-view";
     }

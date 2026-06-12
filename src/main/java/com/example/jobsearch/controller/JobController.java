@@ -22,7 +22,7 @@ public class JobController {
         return "jobs";
     }
     @GetMapping("/jobs/{id}")
-    public String viewJob(@PathVariable Long id, Model model) {
+    public String viewJob(@PathVariable("id") Long id, Model model) {
         Job job = jobService.getJobById(id);
         model.addAttribute("job", job);
         return "job-detail";

@@ -1,37 +1,117 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
-<div class="card shadow-lg p-4">
-    <h2 class="text-2xl font-bold mb-3" th:text="${job.title}"></h2>
-    <p class="text-muted mb-2"><strong>Company:</strong> <span th:text="${job.company}"></span></p>
-    <p class="mb-4" th:text="${job.description}"></p>
-    <th:block th:if="${session.user}">
-        <h3 class="text-xl font-bold mb-3">Apply for this Job</h3>
-        <form th:action="@{/jobs/{id}/apply(id=${job.id})}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="resume" class="form-label">Upload Resume</label>
-                <input type="file" class="form-control" id="resume" name="resume" required>
-                <div class="invalid-feedback">Please upload a resume.</div>
-            </div>
-            <button type="submit" class="btn btn-primary">Apply</button>
-        </form>
-    </th:block>
-    <th:block th:unless="${session.user}">
-        <p class="text-danger">Please <a href="/login">login</a> to apply for this job.</p>
-    </th:block>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Job Detail')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="page-header">
+  <div class="inner">
+    <h1 th:text="${job?.title}">Job Title</h1>
+    <div class="breadcrumb">
+      <a th:href="@{/}">Home</a><span>/</span>
+      <a th:href="@{/jobs}">Jobs</a><span>/</span>
+      <span th:text="${job?.company}">Company</span>
+    </div>
+  </div>
 </div>
-<script>
-    (function () {
-        'use strict';
-        var forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    })();
-</script>
+
+<div class="container fade-in">
+
+  <!-- Not found -->
+  <div th:if="${job == null}" class="alert alert-danger">
+    This job posting could not be found.
+  </div>
+
+  <div th:if="${job != null}">
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:32px" class="jd-layout">
+
+      <!-- LEFT: Job details -->
+      <div>
+        <div style="margin-bottom:28px">
+          <div class="jd-company" th:text="${job.company}">Company</div>
+          <div class="jd-title"   th:text="${job.title}">Job Title</div>
+          <div class="jd-meta">
+            <span class="badge b-acc">Full-time</span>
+            <span class="badge b-green">Remote OK</span>
+            <span class="badge b-blue">Ho Chi Minh City</span>
+          </div>
+        </div>
+
+        <!-- Job Description -->
+        <div class="jd-section">
+          <h3>About the Role</h3>
+          <p th:text="${job.description}">Description goes here.</p>
+        </div>
+
+        <!-- Company info -->
+        <div class="card" style="border-color:rgba(245,158,11,.15)">
+          <h3 style="font-size:14px;margin-bottom:12px">About <span th:text="${job.company}">Company</span></h3>
+          <p style="font-size:13px;color:var(--muted);line-height:1.7">
+            A leading technology company operating in Vietnam, committed to building world-class
+            products and fostering a culture of innovation and continuous learning.
+          </p>
+        </div>
+      </div>
+
+      <!-- RIGHT: Apply panel -->
+      <div>
+        <div class="card" style="position:sticky;top:72px">
+          <h3 style="font-size:16px;margin-bottom:4px" th:text="${job.title}">Job Title</h3>
+          <p class="text-sm text-muted mb-24" th:text="${job.company}">Company</p>
+
+          <!-- Not logged in -->
+          <div th:if="${session.user == null}">
+            <div class="alert alert-info mb-16" style="font-size:13px">
+              Please sign in to apply for this position.
+            </div>
+            <a th:href="@{/login}" class="btn btn-primary btn-w100">Sign In to Apply</a>
+          </div>
+
+          <!-- Logged in -->
+          <div th:if="${session.user != null}">
+            <form th:action="@{/jobs/{id}/apply(id=${job.id})}"
+                  method="post" enctype="multipart/form-data">
+              <input type="hidden" name="jobId" th:value="${job.id}">
+
+              <div class="form-group">
+                <label class="form-label">Upload Resume / CV</label>
+                <div class="upload-area" id="uploadArea">
+                  <label class="upload-label" for="resumeFile">
+                    <span class="upload-icon">&#128196;</span>
+                    <span style="font-size:13px;color:var(--text2)">Click to upload your resume</span>
+                    <span class="upload-hint">PDF, DOC, DOCX recommended</span>
+                  </label>
+                  <input id="resumeFile" type="file" name="resume"
+                         style="display:none"
+                         onchange="document.querySelector('.upload-hint').textContent = this.files[0]?.name || 'PDF, DOC, DOCX recommended'">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-w100">Submit Application</button>
+            </form>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:20px 0">
+
+          <div style="font-size:12px;color:var(--muted)">
+            <p style="margin-bottom:4px">Posted by <strong th:text="${job.company}" style="color:var(--text2)">Company</strong></p>
+            <p>Apply now — positions fill quickly.</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+
+    <div class="mt-32">
+      <a th:href="@{/jobs}" class="btn btn-ghost btn-sm">Back to Jobs</a>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+<style>
+@media(max-width:900px){ .jd-layout { grid-template-columns: 1fr !important; } }
+</style>
+</body>
 </html>

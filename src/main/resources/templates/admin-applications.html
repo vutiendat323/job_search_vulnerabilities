@@ -1,26 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
-<div>
-    <h2 class="text-2xl font-bold mb-4">Applications</h2>
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>User ID</th>
-            <th>Job ID</th>
-            <th>Resume</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="app : ${applications}">
-            <td th:text="${app.id}"></td>
-            <td th:text="${app.userId}"></td>
-            <td th:text="${app.jobId}"></td>
-            <td>
-                <a th:href="@{/uploads/{fileName}(fileName=${app.resumePath})}" class="btn btn-primary btn-sm"><i class="fas fa-file"></i> View</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Applications — Admin')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="page-header">
+  <div class="inner">
+    <h1>Applications</h1>
+    <div class="breadcrumb">
+      <a th:href="@{/}">Home</a><span>/</span>
+      <a th:href="@{/admin}">Admin</a><span>/</span>
+      Applications
+    </div>
+  </div>
 </div>
+
+<div class="container fade-in">
+
+  <div class="sec-head">
+    <span class="sec-title">Submitted Applications</span>
+    <div class="sec-line"></div>
+    <span class="badge b-grey" th:text="${#lists.size(applications)} + ' submissions'">0 submissions</span>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User ID</th>
+          <th>Job ID</th>
+          <th>File</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="app : ${applications}">
+          <td class="td-id" th:text="${app.id}">1</td>
+          <td class="td-id" th:text="${app.userId}">1</td>
+          <td class="td-id" th:text="${app.jobId}">1</td>
+          <td class="td-path" th:text="${app.resumePath}">resume.pdf</td>
+          <td>
+            <span class="badge b-green">Received</span>
+          </td>
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(applications)}">
+          <td colspan="5" style="text-align:center;color:var(--muted);padding:40px">
+            No applications submitted yet.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-24">
+    <a th:href="@{/admin}" class="btn btn-ghost btn-sm">Back to Admin</a>
+  </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
 </html>

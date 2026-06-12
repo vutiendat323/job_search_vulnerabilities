@@ -1,42 +1,131 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
-<div>
-    <section class="hero-section text-white py-10 text-center">
-        <div class="container">
-            <h1 class="text-3xl font-bold mb-4">Welcome to JobSearch</h1>
-            <p class="text-lg mb-6">Find your next job opportunity.</p>
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <input type="text" id="search" class="form-control" placeholder="Search for jobs...">
-                    <div id="searchResult" class="mt-2 text-left text-dark bg-light p-2 rounded"></div>
-                </div>
-            </div>
-            <script>
-                $("#search").on("input", function() {
-                    $("#searchResult").html($(this).val());
-                });
-            </script>
-        </div>
-    </section>
-    <section class="py-8">
-        <div class="container">
-            <h2 class="text-2xl font-bold mb-4">Featured Jobs</h2>
-            <div class="row">
-                <div class="col-md-4 mb-4" th:each="job : ${jobs}">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h3 class="card-title text-lg font-semibold" th:text="${job.title}"></h3>
-                            <p class="card-text text-muted" th:text="${job.company}"></p>
-                            <p class="card-text" th:text="${job.description.substring(0, 80) + '...'}"></p>
-                            <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="text-center mt-4">
-                <a href="/jobs" class="btn btn-outline-primary">View All Jobs</a>
-            </div>
-        </div>
-    </section>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Home')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<!-- Marquee -->
+<div class="marquee-bar">
+  <span class="marquee-inner">
+    &nbsp;&nbsp;&nbsp;
+    *** TOPJOB — FIND YOUR NEXT ROLE ***&nbsp;&nbsp;&nbsp;
+    FPT SOFTWARE &nbsp;·&nbsp; VNG CORPORATION &nbsp;·&nbsp; TIKI &nbsp;·&nbsp; MOMO &nbsp;·&nbsp; VINAI &nbsp;·&nbsp; GRAB VIETNAM
+    &nbsp;&nbsp;&nbsp;*** NEW POSITIONS POSTED DAILY ***&nbsp;&nbsp;&nbsp;
+    FRONTEND &nbsp;·&nbsp; BACKEND &nbsp;·&nbsp; DEVOPS &nbsp;·&nbsp; PRODUCT &nbsp;·&nbsp; DESIGN &nbsp;·&nbsp; DATA
+    &nbsp;&nbsp;&nbsp;*** VIETNAM'S TECH JOB BOARD ***&nbsp;&nbsp;&nbsp;
+  </span>
 </div>
+
+<!-- HERO -->
+<section class="hero fade-in">
+  <div class="hero-tag">Vietnam's Tech Job Board</div>
+  <h1>Find Your<br><span>Dream Tech Career</span></h1>
+  <p class="hero-sub">
+    Browse hundreds of opportunities at Vietnam's top technology companies.
+    Your next role is waiting.
+  </p>
+
+  <form class="hero-search" th:action="@{/jobs}" method="get">
+    <input type="text" name="q" placeholder="Job title, company, or keyword...">
+    <button type="submit">Search</button>
+  </form>
+
+  <div class="hero-actions">
+    <th:block th:if="${session.user == null}">
+      <a th:href="@{/jobs}"     class="btn btn-primary btn-lg">Browse Jobs</a>
+      <a th:href="@{/register}" class="btn btn-outline  btn-lg">Create Account</a>
+    </th:block>
+    <th:block th:if="${session.user != null}">
+      <a th:href="@{/jobs}" class="btn btn-primary btn-lg">Browse Jobs</a>
+    </th:block>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-grid mb-40">
+    <div class="stat-card">
+      <span class="stat-num" th:text="${#lists.size(jobs)} + '+'">0+</span>
+      <span class="stat-lbl">Open Positions</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">50+</span>
+      <span class="stat-lbl">Companies</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">12K+</span>
+      <span class="stat-lbl">Candidates</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">98%</span>
+      <span class="stat-lbl">Satisfaction</span>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="sec-head">
+    <span class="sec-title">Browse by Category</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="category-list mb-48">
+    <a th:href="@{/jobs}" class="category-chip">Frontend</a>
+    <a th:href="@{/jobs}" class="category-chip">Backend</a>
+    <a th:href="@{/jobs}" class="category-chip">DevOps</a>
+    <a th:href="@{/jobs}" class="category-chip">Product</a>
+    <a th:href="@{/jobs}" class="category-chip">Design</a>
+    <a th:href="@{/jobs}" class="category-chip">Data</a>
+    <a th:href="@{/jobs}" class="category-chip">Mobile</a>
+    <a th:href="@{/jobs}" class="category-chip">QA / Testing</a>
+  </div>
+
+  <!-- FEATURED JOBS -->
+  <div class="sec-head">
+    <span class="sec-title">Latest Openings</span>
+    <div class="sec-line"></div>
+    <a th:href="@{/jobs}" class="btn btn-sm btn-outline">View all</a>
+  </div>
+
+  <div class="g3 mb-40">
+    <a th:each="job : ${jobs}"
+       th:href="@{/jobs/{id}(id=${job.id})}"
+       class="job-card fade-in">
+      <div>
+        <div class="job-company" th:text="${job.company}">Company</div>
+        <div class="job-title"   th:text="${job.title}">Job Title</div>
+      </div>
+      <p class="job-desc"
+         th:text="${#strings.length(job.description) > 90 ?
+                    #strings.substring(job.description, 0, 90) + '...' :
+                    job.description}">
+        Description
+      </p>
+      <div class="job-card-foot">
+        <span class="badge b-acc">Full-time</span>
+        <span class="badge b-green">Remote OK</span>
+      </div>
+    </a>
+
+    <div th:if="${#lists.isEmpty(jobs)}"
+         style="grid-column:1/-1;text-align:center;padding:56px;color:var(--muted)">
+      <p style="font-family:var(--px);font-size:11px;margin-bottom:16px">No jobs yet.</p>
+      <a th:href="@{/login}" class="btn btn-outline btn-sm">Sign in to post</a>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="card mb-40"
+       style="text-align:center;padding:44px;border-color:rgba(245,166,35,.25);box-shadow:6px 6px 0 rgba(0,0,0,.5)">
+    <h2 style="margin-bottom:12px;color:var(--text)">Ready to take the next step?</h2>
+    <p style="color:var(--muted);margin-bottom:24px;font-size:13px">
+      Create a free account, upload your resume, and apply to top tech roles in minutes.
+    </p>
+    <a th:href="@{/register}" class="btn btn-primary btn-lg">Get Started — Free</a>
+  </div>
+
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
 </html>

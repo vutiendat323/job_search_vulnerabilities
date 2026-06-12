@@ -20,7 +20,7 @@ public class AdminController {
         return "admin-users";
     }
     @GetMapping("/admin/users/{id}")
-    public String viewUser(@PathVariable Long id, Model model) {
+    public String viewUser(@PathVariable("id") Long id, Model model) {
         User user = userRepository.findById(id).orElse(null);
         model.addAttribute("user", user);
         return "admin-user-detail";

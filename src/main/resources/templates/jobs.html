@@ -1,63 +1,90 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
-<div>
-    <h2 class="text-2xl font-bold mb-4">Job Listings</h2>
-    <div class="mb-4">
-        <input type="text" id="search" class="form-control" placeholder="Search jobs...">
-        <div id="searchResult" class="mt-2 text-dark bg-light p-2 rounded"></div>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Browse Jobs')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="page-header">
+  <div class="inner">
+    <h1>Browse Jobs</h1>
+    <div class="breadcrumb">
+      <a th:href="@{/}">Home</a>
+      <span>/</span>
+      Jobs
     </div>
-    <script>
-        $("#search").on("input", function() {
-            $("#searchResult").html($(this).val());
-        });
-    </script>
-    <div class="row">
-        <div class="col-md-4 mb-4" th:each="job : ${jobs}">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title text-lg font-semibold" th:text="${job.title}"></h3>
-                    <p class="card-text text-muted" th:text="${job.company}"></p>
-                    <p class="card-text" th:text="${job.description.substring(0, 80) + '...'}"></p>
-                    <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <th:block th:if="${session.user?.role == 'ADMIN'}">
-        <h3 class="text-xl font-bold mt-5">Create New Job</h3>
-        <form method="post" action="/jobs/create" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="title" class="form-label">Title</label>
-                <input type="text" class="form-control" id="title" name="title" required>
-                <div class="invalid-feedback">Please enter a title.</div>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" name="description" required></textarea>
-                <div class="invalid-feedback">Please enter a description.</div>
-            </div>
-            <div class="mb-3">
-                <label for="company" class="form-label">Company</label>
-                <input type="text" class="form-control" id="company" name="company" required>
-                <div class="invalid-feedback">Please enter a company name.</div>
-            </div>
-            <button type="submit" class="btn btn-primary">Create</button>
-        </form>
-    </th:block>
+  </div>
 </div>
-<script>
-    (function () {
-        'use strict';
-        var forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    })();
-</script>
+
+<div class="container fade-in">
+
+  <!-- Post a Job (logged-in users) -->
+  <div th:if="${session.user != null}" class="card mb-32" style="border-color:rgba(245,158,11,.2)">
+    <h3 style="margin-bottom:16px;font-size:15px">Post a New Job</h3>
+    <form th:action="@{/jobs/create}" method="post"
+          style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:2;min-width:180px">
+        <label class="form-label">Job Title</label>
+        <input type="text" name="title" class="form-input" placeholder="e.g. Senior React Developer">
+      </div>
+      <div style="flex:1;min-width:130px">
+        <label class="form-label">Company</label>
+        <input type="text" name="company" class="form-input" placeholder="Company name">
+      </div>
+      <div style="flex:3;min-width:200px">
+        <label class="form-label">Description</label>
+        <input type="text" name="description" class="form-input" placeholder="Brief description">
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm" style="flex-shrink:0">Post Job</button>
+    </form>
+  </div>
+
+  <!-- Section header -->
+  <div class="sec-head">
+    <span class="sec-title">All Positions</span>
+    <div class="sec-line"></div>
+    <span class="badge b-grey" th:text="${#lists.size(jobs)} + ' jobs'">0 jobs</span>
+  </div>
+
+  <!-- Job grid -->
+  <div class="g3">
+    <a th:each="job, i : ${jobs}"
+       th:href="@{/jobs/{id}(id=${job.id})}"
+       class="job-card">
+      <div>
+        <div class="job-company" th:text="${job.company}">Company</div>
+        <div class="job-title"   th:text="${job.title}">Job Title</div>
+      </div>
+      <p class="job-desc"
+         th:text="${#strings.length(job.description) > 100 ?
+                    #strings.substring(job.description, 0, 100) + '...' :
+                    job.description}">
+        Description
+      </p>
+      <div class="job-card-foot">
+        <span class="badge b-acc">Full-time</span>
+        <span class="badge b-green"
+              th:if="${i.index % 2 == 0}">Remote OK</span>
+        <span class="badge b-blue"
+              th:if="${i.index % 3 == 0}">Visa Sponsored</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Empty state -->
+  <div th:if="${#lists.isEmpty(jobs)}"
+       class="card mt-24 text-center" style="padding:56px">
+    <p style="font-size:15px;color:var(--muted);margin-bottom:16px">No positions available right now.</p>
+    <a th:if="${session.user != null}" th:href="@{/jobs}" class="btn btn-outline btn-sm">
+      Be the first to post
+    </a>
+    <a th:if="${session.user == null}" th:href="@{/login}" class="btn btn-outline btn-sm">
+      Sign in to post a job
+    </a>
+  </div>
+
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
 </html>

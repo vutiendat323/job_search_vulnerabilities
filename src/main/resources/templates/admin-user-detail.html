@@ -1,11 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
-<div class="card shadow-lg p-4">
-    <h2 class="text-2xl font-bold mb-4">User Details</h2>
-    <p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
-    <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
-    <p><strong>Role:</strong> <span th:text="${user.role}"></span></p>
-    <p><strong>Password:</strong> <span th:text="${user.password}"></span></p>
-    <a href="/admin/users" class="btn btn-secondary mt-3"><i class="fas fa-arrow-left"></i> Back</a>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('User Detail — Admin')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="page-header">
+  <div class="inner">
+    <h1>User Profile</h1>
+    <div class="breadcrumb">
+      <a th:href="@{/}">Home</a><span>/</span>
+      <a th:href="@{/admin}">Admin</a><span>/</span>
+      <a th:href="@{/admin/users}">Users</a><span>/</span>
+      <span th:text="${user?.username}">username</span>
+    </div>
+  </div>
 </div>
+
+<div class="container fade-in">
+
+  <div th:if="${user == null}" class="alert alert-danger">
+    User not found.
+  </div>
+
+  <div th:if="${user != null}">
+    <div style="max-width:560px">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+          <h2 style="font-size:18px" th:text="${user.username}">username</h2>
+          <span class="badge b-acc"  th:if="${user.role == 'ADMIN'}">Admin</span>
+          <span class="badge b-grey" th:if="${user.role != 'ADMIN'}">User</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-lbl">ID</span>
+          <span class="detail-val" th:text="${user.id}">1</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-lbl">Username</span>
+          <span class="detail-val" th:text="${user.username}">admin</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-lbl">Password</span>
+          <span class="detail-val is-pass" th:text="${user.password}">•••••••</span>
+        </div>
+        <div class="detail-row" style="border-bottom:none">
+          <span class="detail-lbl">Role</span>
+          <span class="detail-val"
+                th:classappend="${user.role == 'ADMIN' ? 'is-admin' : ''}"
+                th:text="${user.role}">USER</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-24" style="display:flex;gap:12px">
+      <a th:href="@{/admin/users}" class="btn btn-ghost btn-sm">All Users</a>
+      <a th:href="@{/admin}"       class="btn btn-ghost btn-sm">Admin Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
 </html>

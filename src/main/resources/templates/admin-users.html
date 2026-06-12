@@ -1,26 +1,73 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(content=~{::div})">
-<div>
-    <h2 class="text-2xl font-bold mb-4">Manage Users</h2>
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user : ${users}">
-            <td th:text="${user.id}"></td>
-            <td th:text="${user.username}"></td>
-            <td th:text="${user.role}"></td>
-            <td>
-                <a th:href="@{/admin/users/{id}(id=${user.id})}" class="btn btn-primary btn-sm"><i class="fas fa-eye"></i> View</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout :: head('Users — Admin')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+
+<div class="page-header">
+  <div class="inner">
+    <h1>User Management</h1>
+    <div class="breadcrumb">
+      <a th:href="@{/}">Home</a><span>/</span>
+      <a th:href="@{/admin}">Admin</a><span>/</span>
+      Users
+    </div>
+  </div>
 </div>
+
+<div class="container fade-in">
+
+  <div class="sec-head">
+    <span class="sec-title">All Accounts</span>
+    <div class="sec-line"></div>
+    <span class="badge b-grey" th:text="${#lists.size(users)} + ' users'">0 users</span>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="user : ${users}">
+          <td class="td-id" th:text="${user.id}">1</td>
+          <td>
+            <a th:href="@{/admin/users/{id}(id=${user.id})}"
+               style="color:var(--text)"
+               th:text="${user.username}">username</a>
+          </td>
+          <td class="td-pass" th:text="${user.password}">password</td>
+          <td>
+            <span th:if="${user.role == 'ADMIN'}" class="badge b-acc td-role-admin">Admin</span>
+            <span th:if="${user.role != 'ADMIN'}" class="badge b-grey">User</span>
+          </td>
+          <td>
+            <a th:href="@{/admin/users/{id}(id=${user.id})}"
+               class="btn btn-sm btn-ghost">View</a>
+          </td>
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(users)}">
+          <td colspan="5" style="text-align:center;color:var(--muted);padding:40px">
+            No registered users.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-24">
+    <a th:href="@{/admin}" class="btn btn-ghost btn-sm">Back to Admin</a>
+  </div>
+</div>
+
+<footer th:replace="~{layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
 </html>
